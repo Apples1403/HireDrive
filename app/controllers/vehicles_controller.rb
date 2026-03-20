@@ -1,9 +1,11 @@
 class VehiclesController < ApplicationController
+  before_action :authenticate_account!
   before_action :set_vehicle, only: %i[ show edit update destroy ]
 
   # GET /vehicles or /vehicles.json
   def index
-    @vehicles = Vehicle.all
+   # @vehicles = Vehicle.all
+   @vehicles = Vehicle.by_account(current_account)
   end
 
   # GET /vehicles/1 or /vehicles/1.json
@@ -22,6 +24,8 @@ class VehiclesController < ApplicationController
   # POST /vehicles or /vehicles.json
   def create
     @vehicle = Vehicle.new(vehicle_params)
+
+    @vehicle.account = current_account
 
     respond_to do |format|
       if @vehicle.save
@@ -60,7 +64,7 @@ class VehiclesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_vehicle
-      @vehicle = Vehicle.find(params.expect(:id))
+      @vehicle = Vehicle.by_account(current_account).find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.
